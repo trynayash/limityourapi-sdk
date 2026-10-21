@@ -1,39 +1,18 @@
-# Security Policy
+# Security
 
-We take the security of LimitYourAPI very seriously. If you believe you have found a security vulnerability, please report it to us immediately using the guidelines below.
+## Supported versions
 
----
+| `limityourapi` on npm | Security fixes |
+| :-- | :-- |
+| 3.x | Yes |
+| 2.x and older | No |
 
-## Supported Versions
+## Reporting a problem
 
-We actively provide security patches and updates for the following versions:
+Please don't open a public issue for a security problem. Email **security@limityourapi.tech** with:
 
-| Version | Supported |
-| ------- | --------- |
-| v2.x    | ✅ Yes    |
-| v1.x    | ❌ No     |
+- what the problem is and what it affects
+- steps or a script to reproduce it
+- the SDK version and runtime you used
 
----
-
-## Reporting a Vulnerability
-
-**Please do not open a public GitHub issue for security vulnerabilities.**
-
-Instead, report vulnerabilities privately by emailing us at:
-📧 **security@limityourapi.tech**
-
-Include as much detail as possible, including:
-- A description of the vulnerability and its potential impact.
-- Step-by-step instructions (or a proof-of-concept script) to reproduce the issue.
-- Details of your testing environment.
-
----
-
-## Our Commitment
-
-Upon receiving a vulnerability report, we will:
-1. Acknowledge receipt of your report within 48 hours.
-2. Work to validate and patch the vulnerability as quickly as possible.
-3. Coordinate a public advisory release once the patch is live to protect our users.
-
-Thank you for helping keep LimitYourAPI secure!
+I'll reply within 48 hours, fix it as soon as I can, and publish a note once the fix is out.

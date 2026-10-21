@@ -1,34 +1,16 @@
-# Contributing to LimitYourAPI
+# Contributing
 
-Thank you for your interest in contributing to LimitYourAPI! We welcome contributions of all forms, including bug fixes, new features, documentation, and issues.
+This repository holds integration examples for LimitYourAPI (`examples/`). The SDK source is not here. The Node.js SDK is on npm as `limityourapi`, and the Python and Go SDKs are not published yet.
 
----
+Fixes and new examples are welcome.
 
-## 🛠️ What Is in This Repository
-
-This repository holds integration examples (`examples/`). The SDK source is not here: the Node.js SDK is published on npm as `limityourapi`, and the Go and Python SDKs are not published yet.
-
-### Clone
 ```bash
 git clone https://github.com/trynayash/limityourapi-sdk.git
 cd limityourapi-sdk
 ```
 
----
+1. Fork the repository and branch from `main`. Use `fix/...`, `feat/...` or `docs/...` for the branch name.
+2. Keep each example to one file that runs with only the framework and the SDK installed.
+3. Open a pull request that says what you changed and how you tested it.
 
-## 📝 Submitting Contributions
-
-### Branch Naming Conventions
-- Bug fixes: `fix/issue-description`
-- New features: `feat/feature-name`
-- Documentation: `docs/page-updated`
-
-### Pull Request Guidelines
-1. Fork this repository and create your branch from `main`.
-2. Document your changes in detail in the PR description.
-3. PRs must be approved by a core maintainer before merging.
-
----
-
-## ❓ Questions?
-If you have any questions, feel free to open a GitHub Discussion or reach out to us at `support@limityourapi.tech`.
+For questions, open an issue or email `support@limityourapi.tech`. To report a security problem, see [SECURITY.md](SECURITY.md).

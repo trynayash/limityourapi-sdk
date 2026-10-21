@@ -1,20 +1,26 @@
 # Changelog
 
-All notable changes to the LimitYourAPI project will be documented in this file.
+Versions of the `limityourapi` npm package.
 
----
+## 3.2.0 (2026-08-25)
 
-## [2.0.1] - 2026-06-18
+- Added `meterAI()` to count LLM token usage in one call.
+- Added `injectHeaders()` to set `X-RateLimit-*` and `Retry-After` on Express, Fastify or Web responses.
+- No runtime dependencies. The SDK uses the built-in `fetch`.
 
-### 🚀 Improvements
-- **Package rename and aliases:** the npm package is now `limityourapi`; added parameter aliases (`route`, `key`, `identifier`) and response aliases (`reset`, `retryAfter`, `retry_after`).
-- **Improved TypeScript Support:** Added complete static type definitions and explicit interface contracts (`LimitYourAPIOptions`, `CheckOptions`, `CheckResult`) to resolve structural overlap.
-- **Enhanced Documentation:** Restructured JavaScript and TypeScript integrations into separated, quickstart-focused and advanced reference guides, complete with before/after middleware examples.
-- **Updated Examples:** Added Express, FastAPI, and Go Fiber configuration templates.
+## 3.0.1 (2026-06-23)
 
----
+- Added `enforce()` to count usage by customer and meter: requests, AI tokens or cost.
+- Quotas can follow a customer's plan in Stripe or Razorpay, through webhooks to the service.
+- `check()` still works. `check("id")` is the same as `enforce({ customer: "id", meter: "api_calls", consume: 1 })`.
 
-## [1.2.0] - 2026-04-13
-- Node.js SDK initial feature implementation.
-- Added Express middleware route throttling wrappers.
-- Integrated fallback support for local client-side memory locks.
+## 2.0.1 (2026-06-18)
+
+- The package is now published as `limityourapi`.
+- Added parameter aliases (`route`, `key`, `identifier`) and response aliases (`reset`, `retryAfter`, `retry_after`).
+- Added TypeScript types: `LimitYourAPIOptions`, `CheckOptions`, `CheckResult`.
+- Added the Express, FastAPI and Go examples in this repository.
+
+## 1.0.0 (2026-04-13)
+
+- First release of the Node.js SDK, with Express middleware.
