@@ -1,12 +1,11 @@
 <div align="center">
   <img src="https://limityourapi.tech/favicon/apple-touch-icon.png" alt="LimitYourAPI Logo" width="80" height="80" />
   <h1>LimitYourAPI</h1>
-  <p><strong>Production-grade distributed rate limiting infrastructure for developers.</strong></p>
+  <p><strong>Hosted API rate limiting, customer quotas and AI token limits. This repository holds integration examples.</strong></p>
 
   <p>
-    <a href="https://github.com/trynayash/LimityourAPI-Repo/actions"><img src="https://img.shields.io/badge/build-passing-brightgreen?style=flat-square" alt="Build Status" /></a>
     <a href="https://www.npmjs.com/package/limityourapi"><img src="https://img.shields.io/npm/v/limityourapi.svg?style=flat-square" alt="npm version" /></a>
-    <a href="https://github.com/trynayash/LimityourAPI-Repo/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/badge/License-Apache_2.0-blue.svg?style=flat-square" alt="License" /></a>
     <a href="https://golang.org"><img src="https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go" alt="Go Version" /></a>
     <a href="https://react.dev"><img src="https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61DAFB?style=flat-square" alt="React Frontend" /></a>
   </p>
@@ -26,40 +25,42 @@
 
 ## 💡 What is LimitYourAPI?
 
-**LimitYourAPI** is a high-performance, developer-first API rate limiting platform. Engineered for sub-15ms latency, it provides centralized atomic rate-limiting, comprehensive threat intelligence, and global monetization pipes to transform any API into a resilient, scalable product.
+**LimitYourAPI** is a hosted API rate limiting service. Your server asks it whether to serve a request; it runs the matching rule as one atomic Redis Lua script and answers allow or 429. It also handles customer quotas that follow Stripe and Razorpay plans, AI token budgets and IP block lists. No latency benchmarks of the hosted service have been published.
+
+This repository contains integration examples only. The service and the SDK source are not in it.
 
 ### Why use LimitYourAPI instead of in-memory maps or API gateways?
 1. **Consistency at Scale:** In-memory rate limiting fails when your application is scaled horizontally behind a load balancer. LimitYourAPI uses atomic Redis Lua scripts to maintain global consistency.
 2. **Event Loop Resiliency:** Offloads CPU-intensive sliding-window computations from single-threaded runtimes (like Node.js), preventing event loop starvation.
-3. **Fail-Open Design:** Out-of-the-box client SDK resilience. If the rate limiter database experiences latency, client requests fail-open, guaranteeing no disruption to your user experience.
+3. **Fail-Open Design:** If the LimitYourAPI API does not answer before the SDK timeout, the SDK allows the request instead of failing it.
 
 ---
 
 ## ⚡ Architecture Overview
 
-LimitYourAPI decouples rate limit decisions from your core application logic to minimize database connection pool contention.
+LimitYourAPI moves rate limit decisions out of your application and into a shared service.
 
 ```mermaid
 graph TD
     Client[Client Request] -->|Route Hit| AppServer[App Server: Node / Go / Python]
-    AppServer -->|Async Check <15ms| LYAEdge[LimitYourAPI Edge Service]
-    LYAEdge -->|Atomic Lua Script| Redis[Upstash Redis Cluster]
-    LYAEdge -->|Async Telemetry Batch| Postgres[Neon Postgres SQL]
+    AppServer -->|HTTPS check| LYA[LimitYourAPI API]
+    LYA -->|Atomic Lua Script| Redis[Redis]
+    LYA -->|Batched request logs| Postgres[PostgreSQL]
 ```
 
 ### Core Architecture Highlights
 * **Atomic Redis Lua Scripts:** Prevents race conditions where two concurrent requests from the same user exceed their remaining quota.
-* **Non-Blocking Telemetry:** Buffers telemetry logs in memory and flushes them to PostgreSQL in batches, saving database CPU cycles.
-* **Fail-Safe Circuit Breaker:** Local SDK fallback rules maintain performance bounds if network connectivity is compromised.
+* **Batched Logs:** Request logs are buffered in memory and written to PostgreSQL in batches, off the request path.
+* **Fail-Open SDK:** If the API cannot be reached before the timeout, the SDK allows the request.
 
 ---
 
 ## 🌟 Features
 
 * **💰 Multi-Tier SaaS Quotas:** Enforce daily/monthly plan quotas per API key or user ID out of the box.
-* **🛡️ Defensive Inspections:** Advanced bot protection, IP reputation verification, and request signatures.
-* **📊 Time-Series Telemetry:** High-resolution request heatmaps, block rate trends, and latency percentiles.
-* **🔐 Hardware-Grade Security:** JWT sessions and secure authenticator MFA (TOTP).
+* **🛡️ Abuse Checks:** IP allow and block lists, temporary bans, IP reputation scores and adaptive limits.
+* **📊 Usage Charts:** Requests, block rates and top endpoints over time.
+* **🔐 Account Security:** JWT sessions in HttpOnly cookies and TOTP two-factor authentication.
 
 ---
 
@@ -112,9 +113,7 @@ app.use('/api', async (req, res, next) => {
 
 ### 2. Python SDK
 
-```bash
-pip install limityourapi
-```
+The Python SDK is not on PyPI yet, so `pip install limityourapi` does not work today. Until it is published, call the REST API (`POST https://api.v2.limityourapi.tech/enforce` with an `X-API-Key` header). This is what the client looks like:
 
 ```python
 from limityourapi import LimitYourAPI
@@ -125,9 +124,7 @@ decision = limiter.check(endpoint="/profile")
 
 ### 3. Go SDK
 
-```bash
-go get github.com/trynayash/limityourapi-go
-```
+The Go module is not published yet: `github.com/trynayash/limityourapi-go` does not exist, so `go get` does not work today. Until it is, call the REST API. This is what the client looks like:
 
 ```go
 import "github.com/trynayash/limityourapi-go"
@@ -138,16 +135,16 @@ decision, err := client.Check(context.Background(), "/v1/items", nil, nil)
 
 ---
 
-## 📊 Performance Benchmarks
+## 📊 Compared With an In-Memory Limiter
 
-In-memory locking vs. remote distributed database latency comparisons under high concurrent load:
+No latency benchmarks of the hosted service have been published. By design:
 
-| Metric | Local In-Memory | LimitYourAPI (Lua/Redis) |
+| Property | Local In-Memory | LimitYourAPI (Lua/Redis) |
 | --- | --- | --- |
-| **Decision Latency (p50)** | 0.1ms (Blocks Node loop) | **<15ms (Non-blocking async)** |
-| **Distributed Consistency** | ❌ No | **✅ Yes** |
-| **Data Persistence** | ❌ No | **✅ Yes** |
-| **Multi-instance isolation** | ❌ No | **✅ Yes** |
+| **Extra network call per request** | No | Yes, one HTTPS call |
+| **Shared across instances** | ❌ No | **✅ Yes** |
+| **Survives restarts** | ❌ No | **✅ Yes** |
+| **Change limits without a deploy** | ❌ No | **✅ Yes** |
 
 ---
 
@@ -161,4 +158,4 @@ In-memory locking vs. remote distributed database latency comparisons under high
 ---
 
 ## 📄 License
-Released under the **Apache 2.0 License**. Developed with precision for scalable systems.
+The examples in this repository are released under the **Apache 2.0 License**. The `limityourapi` npm package is MIT licensed.

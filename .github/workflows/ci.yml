@@ -6,9 +6,12 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   validate-examples:
-    name: Validate Examples
+    name: Validate Examples (syntax)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -17,9 +20,25 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '20'
 
-      - name: Validate Express Example
+      - name: Check Express example
         run: |
-          cd examples/node-express
-          npm install --dry-run
+          cp examples/node-express/server.js "$RUNNER_TEMP/server.mjs"
+          node --check "$RUNNER_TEMP/server.mjs"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Check FastAPI example
+        run: python -m py_compile examples/fastapi/main.py
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Check Go example formatting
+        run: test -z "$(gofmt -l examples/go)"

@@ -16,8 +16,8 @@ async def rate_limit_middleware(request: Request, call_next):
     if not result.allowed:
         return JSONResponse(
             status_code=429,
-            content={"error": "Too Many Requests", "retryAfter": result.retry_after},
-            headers={"Retry-After": str(result.retry_after)}
+            content={"error": "Too Many Requests", "retryAfter": result.reset_in},
+            headers={"Retry-After": str(result.reset_in)}
         )
         
     response = await call_next(request)

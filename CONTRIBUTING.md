@@ -4,20 +4,14 @@ Thank you for your interest in contributing to LimitYourAPI! We welcome contribu
 
 ---
 
-## 🛠️ SDK Local Development Setup
+## 🛠️ What Is in This Repository
 
-To contribute to the client SDK modules:
+This repository holds integration examples (`examples/`). The SDK source is not here: the Node.js SDK is published on npm as `limityourapi`, and the Go and Python SDKs are not published yet.
 
-### 1. Clone the Developer Repository
+### Clone
 ```bash
-git clone https://github.com/trynayash/LimityourAPI-Repo.git
-cd LimityourAPI-Repo
-```
-
-### 2. Node SDK Setup
-```bash
-cd sdk
-npm install
+git clone https://github.com/trynayash/limityourapi-sdk.git
+cd limityourapi-sdk
 ```
 
 ---
@@ -30,7 +24,7 @@ npm install
 - Documentation: `docs/page-updated`
 
 ### Pull Request Guidelines
-1. Fork the SDK repository and create your branch from `main`.
+1. Fork this repository and create your branch from `main`.
 2. Document your changes in detail in the PR description.
 3. PRs must be approved by a core maintainer before merging.
 
